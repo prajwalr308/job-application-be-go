@@ -5,5 +5,5 @@ type Job struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Status      string `json:"status"`
-	created_at  string `json:"created_at"`
+	Created_at  string `json:"created_at"`
 }
