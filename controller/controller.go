@@ -2,12 +2,11 @@ package controller
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"job-app/main/db"
 	"job-app/main/model"
 	"log"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
 func GetJobs(c *gin.Context) {
@@ -83,4 +82,24 @@ func UpdateJob(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, updatedJob)
+}
+
+func DeleteJob(c *gin.Context) {
+	id := c.Param("id")
+	sqlStatement := `DELETE FROM jobs WHERE id=$1`
+	result, err := db.DB.Exec(sqlStatement, id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	if rowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "No job found with the given ID"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Job deleted successfully"})
 }
